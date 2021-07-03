@@ -29,18 +29,30 @@ namespace NasaImagesDemo.Controllers
             return View();
         }
 
-        //public bool isValideDate(string date)
-        //{
+        protected bool isValidDate(String date)
+        {
+            try
+            {
+                DateTime dt = DateTime.Parse(date);
 
-
-        //}
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public string formatDate(string date)
         {           
             DateTime myDateTime = DateTime.Parse(date);
+
             var dateInfo = myDateTime.ToString(new CultureInfo("zh-cn"));
-            var result = dateInfo.Replace("/", "-");           
-            int lastAcceptedchar = result.IndexOf(" ");           
+
+            var result = dateInfo.Replace("/", "-");   
+            
+            int lastAcceptedchar = result.IndexOf(" ");   
+            
             string formatedDate = result.Substring(0, lastAcceptedchar);          
 
             return formatedDate;
