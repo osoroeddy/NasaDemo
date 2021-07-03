@@ -25,16 +25,37 @@ namespace NasaImagesDemo.Controllers
 
         public IActionResult Index()
         {
-
-            using (var webClient = new WebClient())
-            {
-                string imagesJson = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4");
-                var imagecollections = JsonConvert.DeserializeObject<ApodImage>(imagesJson);
-
-                imagefile = webClient.DownloadData(imagecollections.url);
-            }
+           
 
                 return View();
+        }
+
+        public void AddImages()
+        {
+
+            var dateList = loadDatesfromFile();
+
+            foreach (var item in dateList)
+            {
+
+               var result = formatDate(item);
+
+                if (isValidDate(result)) {
+
+                    using (var webClient = new WebClient())
+                    {
+                        string url = "https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result;
+                       
+                        var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
+                       
+                    }
+
+                };
+
+            }
+
+            
+
         }
 
         protected bool isValidDate(String date)
