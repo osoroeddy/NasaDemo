@@ -13,6 +13,8 @@ namespace NasaImagesDemo.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        private static byte[] imagefile;
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -20,8 +22,28 @@ namespace NasaImagesDemo.Controllers
 
         public IActionResult Index()
         {
+                      
+
+
             return View();
         }
+
+        //public bool isValideDate(string date)
+        //{
+
+
+        //}
+
+        //Load date input from a local text file
+        public string[] loaddatesfromFile()
+        {
+            //Read dates from text file and Save the inputs to a string array
+            string[] datesText = System.IO.File.ReadAllLines(@"C:\Users\User\testFolder\dates.txt");
+
+            return datesText;
+
+        }
+
 
         public IActionResult Privacy()
         {
