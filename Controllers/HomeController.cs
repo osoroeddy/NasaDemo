@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NasaImagesDemo.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace NasaImagesDemo.Controllers
@@ -23,10 +25,16 @@ namespace NasaImagesDemo.Controllers
 
         public IActionResult Index()
         {
-                      
 
+            using (var webClient = new WebClient())
+            {
+                string imagesJson = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4");
+                var imagecollections = JsonConvert.DeserializeObject<ApodImage>(imagesJson);
 
-            return View();
+                imagefile = webClient.DownloadData(imagecollections.url);
+            }
+
+                return View();
         }
 
         protected bool isValidDate(String date)
@@ -51,9 +59,9 @@ namespace NasaImagesDemo.Controllers
 
             var result = dateInfo.Replace("/", "-");   
             
-            int lastAcceptedchar = result.IndexOf(" ");   
+            int lastAcceptedChar = result.IndexOf(" ");   
             
-            string formatedDate = result.Substring(0, lastAcceptedchar);          
+            string formatedDate = result.Substring(0, lastAcceptedChar);          
 
             return formatedDate;
         }
