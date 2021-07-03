@@ -4,6 +4,7 @@ using NasaImagesDemo.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,8 +35,19 @@ namespace NasaImagesDemo.Controllers
 
         //}
 
+        public string formatDate(string date)
+        {           
+            DateTime myDateTime = DateTime.Parse(date);
+            var dateInfo = myDateTime.ToString(new CultureInfo("zh-cn"));
+            var result = dateInfo.Replace("/", "-");           
+            int lastAcceptedchar = result.IndexOf(" ");           
+            string formatedDate = result.Substring(0, lastAcceptedchar);          
+
+            return formatedDate;
+        }
+
         //Load date input from a local text file
-        public string[] loaddatesfromFile()
+        public string[] loadDatesfromFile()
         {
             //Read dates from text file and Save the inputs to a string array
             string[] datesText = System.IO.File.ReadAllLines(@"C:\Users\User\testFolder\dates.txt");
