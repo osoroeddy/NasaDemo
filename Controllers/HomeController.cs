@@ -40,7 +40,7 @@ namespace NasaImagesDemo.Controllers
 
         [HttpPost]
         [Obsolete]
-        public void AddImage(ApodImageCreateViewModel file)
+        public IActionResult AddImage(ApodImageCreateViewModel file)
         {
             var dateList = loadDatesfromFile();
 
@@ -57,6 +57,7 @@ namespace NasaImagesDemo.Controllers
                         var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
 
                         //imagefile = webClient.DownloadData(imagecollections.url);
+                        
 
                         string uniqueImageFileName = null;
                         if (file.Imageurl != null)
@@ -85,8 +86,8 @@ namespace NasaImagesDemo.Controllers
                     }
                 };
             
-            }           
-
+            }
+            return View();
         }    
             protected bool isValidDate(String date)
         {

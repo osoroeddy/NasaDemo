@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ApodImage>
+@{
+    Layout = "~Views/Shared/_Layout.schtml";
+    ViewBag.Title = "Get Nasa Images";
+
+}
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+
+    </title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Date </th>
+                <th>Image Title </th>
+                <th>Explanation </th>
+                <th>Nasas Image </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var image in Model)
+            { 
+            <tr>
+                <td>@image.date</td>
+                <td>@image.title </td>
+                <td>@image.explanation  </td>
+                <td>@image.url </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+
