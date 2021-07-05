@@ -1,9 +1,12 @@
 ﻿
 
+using Microsoft.AspNetCore.Http;
+
 namespace NasaImagesDemo
 {
-    public class ApodImage
+    public partial class ApodImage
     {
+       public int ApodImageID { get; set; }
         public string copyright { get; set; }
         public string date { get; set; }
         public string explanation { get; set; }
