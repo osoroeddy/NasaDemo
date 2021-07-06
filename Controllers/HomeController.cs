@@ -13,6 +13,7 @@ using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.Json;
 using Microsoft.Extensions.Hosting.Internal;
 using NasaImagesDemo.ViewModels;
 
@@ -33,9 +34,54 @@ namespace NasaImagesDemo.Controllers
             this._environment = Environment;
         }
         public IActionResult Index()
-        {       
+        {
+            var dateList = loadDatesfromFile();
 
-                return View();
+            foreach (var item in dateList)
+            {
+                var result = formatDate(item);
+
+                if (isValidDate(result))
+                {
+
+                    using (var webClient = new WebClient())
+                    {
+                        string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
+
+                        
+                        //var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
+                        var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
+
+                        string uniqueImageFileName = null;
+
+                        if (imagecollections.Imageurl != null)
+                        {
+                            string uploadFolder = Path.Combine(_environment.WebRootPath, "Images");
+                            uniqueImageFileName = Guid.NewGuid().ToString() + "_" + imagecollections.Imageurl.FileName;
+                            string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
+                            imagecollections.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
+                        }
+                        ApodImage newImage = new ApodImage
+                        {
+                            copyright = imagecollections.copyright,
+                            date = imagecollections.date,
+                            explanation = imagecollections.explanation,
+                            hdurl = imagecollections.hdurl,
+                            media_type = imagecollections.media_type,
+                            service_version = imagecollections.service_version,
+                            title = imagecollections.title,
+                            url = uniqueImageFileName
+
+                        };
+
+                        _unitOfWork.GetRepositoryInstance<ApodImage>().AddImages(newImage);
+
+                    }
+                };
+
+            }
+
+            return View();
         }
 
         [HttpPost]
@@ -53,16 +99,14 @@ namespace NasaImagesDemo.Controllers
                     using (var webClient = new WebClient())
                     {
                         string url = "https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result;
+                      
 
-                        var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
-
-                        //imagefile = webClient.DownloadData(imagecollections.url);
+                       var imagecollections = JsonConvert.DeserializeObject<ApodImageCollectionObject>(url);                 
                         
-
                         string uniqueImageFileName = null;
+
                         if (file.Imageurl != null)
                         {
-
                             string uploadFolder = Path.Combine(_environment.WebRootPath, "Images");
                             uniqueImageFileName = Guid.NewGuid().ToString() + "_" + file.Imageurl.FileName;
                             string filepath = Path.Combine(uploadFolder, uniqueImageFileName);

@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace NasaImagesDemo
 {
@@ -16,4 +17,11 @@ namespace NasaImagesDemo
         public string title { get; set; }
         public string url { get; set; }
     }
+
+    public class ApodImageCollectionObject
+    {
+
+        public List<ApodImage> listOfImages { get; set; }
+    }
+      
 }

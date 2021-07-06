@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NasaImagesDemo
 {
-    public partial class dbNasaImagesDemo : DbContext
-    {
-        public virtual DbSet<ApodImage> ApodImages {get; set;}
-    }
+    //public partial class dbNasaImagesDemo : DbContext
+    //{
+    //    public virtual DbSet<ApodImage> ApodImages {get; set;}
+    //}
 }

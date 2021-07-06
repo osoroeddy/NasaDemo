@@ -9,8 +9,8 @@ namespace NasaImagesDemo
     {
         //public List<ApodImage> GetApodImages()
         //{
-        //    NasaImagesDBContext imagesDBContext = new NasaImagesDBContext();
-        //    return imagesDBContext.
+        //    //NasaImagesDBContext imagesDBContext = new NasaImagesDBContext();
+        //    //return imagesDBContext.
 
         //}
     }
