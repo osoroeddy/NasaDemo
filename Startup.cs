@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NasaImagesDemo.Repository;
+using NasaImagesDemo.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace NasaImagesDemo
             services.AddControllersWithViews();
             services.AddDbContext<NasaImagesDBContext>(options =>options.UseSqlServer(_config.GetConnectionString("NasaDBConnection")));
             services.AddTransient<NasaImagesDBContext>();
+            services.AddTransient<ApodImage>();
+            services.AddTransient<ApodImageCreateViewModel>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

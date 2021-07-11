@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using NasaImagesDemo.ViewModels;
 
 namespace NasaImagesDemo
 {
@@ -11,12 +11,14 @@ namespace NasaImagesDemo
 
         public NasaImagesDBContext(DbContextOptions<NasaImagesDBContext> options)
             : base(options)
-        { 
-                
+        {
+
         }
 
 
         DbSet<ApodImage> ApodImages { get; set; }
+        DbSet<ApodImageCreateViewModel> ApodImageCreateViewModel { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

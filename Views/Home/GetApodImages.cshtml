@@ -1,0 +1,53 @@
+﻿@model IEnumerable<NasaImagesDemo.ApodImage>
+
+@{
+    ViewData["Title"] = "Select Nasa Images";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Select Nasa Images</h1>
+
+<p>
+    <a asp-action="Index">Home</a>
+</p>
+<div class="row justify-content-around m-3">
+    
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Explanation
+                    </th>
+                    <th>
+                        Image
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.explanation)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.title)
+                        </td>
+
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+       
+    </div>
+

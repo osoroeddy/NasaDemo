@@ -16,12 +16,13 @@ namespace NasaImagesDemo
         public string service_version { get; set; }
         public string title { get; set; }
         public string url { get; set; }
+
     }
 
-    public class ApodImageCollectionObject
-    {
+    //public class ApodImageCollectionObject
+    //{
 
-        public List<ApodImage> listOfImages { get; set; }
-    }
+    //    public List<ApodImage> listOfImages { get; set; }
+    //}
       
 }

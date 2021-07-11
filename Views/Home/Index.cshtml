@@ -1,8 +1,54 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+@*<div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>*@
+<div class="row">
+    <div class="col-md-12">
+        <div class="nav-menus">
+            <ul class="nav nav-pills">
+                <li class="btn btn-info fa-pull-left fa"> @Html.ActionLink("Home", "Index", "Home", new { @class = "navbar-brand" }) </li>
+                <li class="btn btn-info fa-pull-left fa">@Html.ActionLink("Nasa Images", "GetApodImages", "Home", new { @class = "navbar-brand" }) </li>
+                <li class="btn btn-info fa-pull-left fa">@Html.ActionLink("Contact Us", "Contact", "Home", new { @class = "navbar-brand" }) </li>
+            </ul>
+
+        </div>
+
+    </div>
+
 </div>
+
+@*<table>
+    <thead>
+        <tr>
+            <th>Date </th>
+            <th>Image Title </th>
+            <th>Explanation </th>
+            <th>Nasas Image </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @ViewBag.Title
+       
+     
+                   
+                    <tr>
+                        <td>@Model.date</td>
+                        <td>@Model.title </td>
+                        <td>@Model.explanation  </td>
+                        <td>@Model.url </td>
+                    </tr>
+            
+            </tbody>
+    </table>*@
+
+
+

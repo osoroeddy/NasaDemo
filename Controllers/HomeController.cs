@@ -10,11 +10,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 using System.IO;
-using System.Text.Json;
-using Microsoft.Extensions.Hosting.Internal;
 using NasaImagesDemo.ViewModels;
 
 namespace NasaImagesDemo.Controllers
@@ -23,7 +22,10 @@ namespace NasaImagesDemo.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        private readonly IFormFile _formfile;
+
         public GenericUnitOfWork _unitOfWork = new GenericUnitOfWork();
+
         [Obsolete]
         private IHostingEnvironment _environment;
 
@@ -31,109 +33,79 @@ namespace NasaImagesDemo.Controllers
         public HomeController(ILogger<HomeController> logger, IHostingEnvironment Environment)
         {
             _logger = logger;
-            this._environment = Environment;
+            _environment = Environment;
+         
         }
-        public IActionResult Index()
+        public IActionResult Index(ApodImageCreateViewModel file)
         {
+                        
             var dateList = loadDatesfromFile();
 
             foreach (var item in dateList)
             {
                 var result = formatDate(item);
 
-                if (isValidDate(result))
+                if (isExist(item))
                 {
+                    continue;
+                }
 
-                    using (var webClient = new WebClient())
-                    {
-                        string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
+                if (!IsValidDate(result))
+                {
+                    ViewBag.ErrorMessage = $"The date {result} that was supplied in not a valid date, Please make necessary changes to view the image";
 
-                        
-                        //var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
-                        var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
-
-                        string uniqueImageFileName = null;
-
-                        if (imagecollections.Imageurl != null)
+                    continue;
+                }
+                else
+                {                 
+                        using (var webClient = new WebClient())
                         {
-                            string uploadFolder = Path.Combine(_environment.WebRootPath, "Images");
-                            uniqueImageFileName = Guid.NewGuid().ToString() + "_" + imagecollections.Imageurl.FileName;
-                            string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
-                            imagecollections.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
-                        }
-                        ApodImage newImage = new ApodImage
-                        {
-                            copyright = imagecollections.copyright,
-                            date = imagecollections.date,
-                            explanation = imagecollections.explanation,
-                            hdurl = imagecollections.hdurl,
-                            media_type = imagecollections.media_type,
-                            service_version = imagecollections.service_version,
-                            title = imagecollections.title,
-                            url = uniqueImageFileName
+                            string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
 
-                        };
+                            //var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
+                            var imagecollection = JsonConvert.DeserializeObject<ApodImage>(url);
+                            var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
 
-                        _unitOfWork.GetRepositoryInstance<ApodImage>().AddImages(newImage);
 
-                    }
-                };
 
-            }
+                            var imageUrl = imagecollections.hdurl;
 
-            return View();
-        }
+                            string path = @"C:\Users\User\source\repos\NasaImagesDemo\Images";
 
-        [HttpPost]
-        [Obsolete]
-        public IActionResult AddImage(ApodImageCreateViewModel file)
-        {
-            var dateList = loadDatesfromFile();
+                            webClient.DownloadFile(new Uri(imageUrl), path);                            
 
-            foreach (var item in dateList)
-            {
-               var result = formatDate(item);                
+                            string uniqueImageFileName = null;
 
-                if (isValidDate(result)) {
+                            if (file.Imageurl != null)
 
-                    using (var webClient = new WebClient())
-                    {
-                        string url = "https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result;
+                            {
+                                string uploadFolder = Path.Combine(_environment.WebRootPath, "~Images");
+                                uniqueImageFileName = Guid.NewGuid().ToString() + "_" + file.Imageurl.FileName;
+                                file.PhotoUrl = uniqueImageFileName;
+                                string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
+                                file.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
+                            }
+                            ApodImage newImage = new ApodImage
+                            {
+                                copyright = imagecollections.copyright,
+                                date = imagecollections.date,
+                                explanation = imagecollections.explanation,
+                                hdurl = imagecollections.hdurl,
+                                media_type = imagecollections.media_type,
+                                service_version = imagecollections.service_version,
+                                title = imagecollections.title,
+                                url = uniqueImageFileName
+
+                            };         
                       
-
-                       var imagecollections = JsonConvert.DeserializeObject<ApodImageCollectionObject>(url);                 
-                        
-                        string uniqueImageFileName = null;
-
-                        if (file.Imageurl != null)
-                        {
-                            string uploadFolder = Path.Combine(_environment.WebRootPath, "Images");
-                            uniqueImageFileName = Guid.NewGuid().ToString() + "_" + file.Imageurl.FileName;
-                            string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
-                            file.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
-                        }
-                        ApodImage newImage = new ApodImage
-                        {
-                            copyright = file.copyright,
-                            date = file.date,
-                            explanation = file.explanation,
-                            hdurl = file.hdurl,
-                            media_type = file.media_type,
-                            service_version = file.service_version,
-                            title = file.title,
-                            url = uniqueImageFileName
-
-                        };
-
-                        _unitOfWork.GetRepositoryInstance<ApodImage>().AddImages(newImage);                    
-
-                    }
-                };
-            
+                    };
+                }
             }
+         
             return View();
         }    
-            protected bool isValidDate(String date)
+
+        protected bool IsValidDate(String date)
         {
             try
             {
@@ -141,12 +113,20 @@ namespace NasaImagesDemo.Controllers
 
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                return false;
+                _logger.LogError(e.Message);
+
+                ViewBag.ErrorTitle = $"The date { date} is not a valid";
+                ViewBag.ErrorMesage = $"The date { date} supplied is either not a valid day of the month or is not properly formatted. The image for this date {date} will not be displayed";
+                
             }
+
+            return false;
+
         }
-        public string formatDate(string date)
+
+       public string formatDate(string date)
         {           
             DateTime myDateTime = DateTime.Parse(date);
 
@@ -168,16 +148,30 @@ namespace NasaImagesDemo.Controllers
             string[] datesText = System.IO.File.ReadAllLines(@"C:\Users\User\testFolder\dates.txt");
 
             return datesText;
-        }     
-        public ActionResult Images(ApodImage image)
-        {
-            return View(_unitOfWork.GetRepositoryInstance<ApodImage>().GetAllImages());
-        }     
+        }               
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public ActionResult GetApodImages()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var listOfImages = _unitOfWork.GetRepositoryInstance<ApodImage>().GetAllImages();
+            ViewBag.Title = "Nasa Images";
+
+            return View(listOfImages);
         }
+
+        private bool isExist(string inputDate)
+        {
+
+            var listOfImages = _unitOfWork.GetRepositoryInstance<ApodImage>().GetAllImages().ToList();
+
+            var list = listOfImages.Where(p => p.date == inputDate);
+
+            if (list != null)
+            {
+                return true;
+
+            }
+            return false;
+        }
+
     }
 }
