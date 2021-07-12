@@ -1,0 +1,57 @@
+﻿@model NasaImagesDemo.ViewModels.ApodImageCreateViewModel
+@{
+    Layout = "~Views/Shared/_Layout.schtml";
+    ViewBag.Title = "Get Nasa Images";
+
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+
+    </title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Date </th>
+                <th>Image Title </th>
+                <th>Explanation </th>
+                <th>Nasas Image </th>
+            </tr>
+        </thead>
+        <tbody>
+           @*@foreach (var image in listOfImages)
+                {
+                <tr>
+                    <td>@Model.date  </td>    
+                    <td>@Model.explanation</td>
+                    <td>@Model.title  </td>
+                    <td>@Model.url</td>
+                </tr>
+           // }*@
+        </tbody>
+    </table>
+    <div class="row justify-content-around m-3">
+        <div class="col-sm-8">
+            <div class="card-header">
+                <h1>@ViewBag.Title.</h1>
+            </div>
+            <div class="card-body text-center">
+                <img class="card-img-top" src "awttwuetrgtewfdshhggfdsfsfdg" />
+                <h4>     @Model.date           </h4>
+                <h4>     @Model.explanation           </h4>
+                <h4>     @Model.PhotoUrl          </h4>
+            </div>
+            <div class="card-footer text-center">
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+</body>
+</html>

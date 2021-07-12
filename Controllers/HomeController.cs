@@ -45,10 +45,10 @@ namespace NasaImagesDemo.Controllers
             {
                 var result = formatDate(item);
 
-                if (isExist(item))
-                {
-                    continue;
-                }
+                //if (!isExist(result))
+                //{
+                //    continue;
+                //}
 
                 if (!IsValidDate(result))
                 {
@@ -96,8 +96,10 @@ namespace NasaImagesDemo.Controllers
                                 title = imagecollections.title,
                                 url = uniqueImageFileName
 
-                            };         
-                      
+                            };
+
+                        _unitOfWork.GetRepositoryInstance<ApodImage>().AddImages(newImage);
+
                     };
                 }
             }

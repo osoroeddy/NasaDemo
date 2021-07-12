@@ -30,6 +30,7 @@
             <tbody>
                 @foreach (var item in Model)
                 {
+                    var ImageUrl = "~/Images/" + (item.url ?? "GenericImage.jpg");
                     <tr>
 
                         <td>
@@ -40,7 +41,8 @@
                         </td>
 
                         <td>
-                            @Html.DisplayFor(modelItem => item.title)
+                            @Html.DisplayFor(modelItem => item.url)
+                            
                         </td>
 
                     </tr>

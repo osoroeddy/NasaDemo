@@ -12,10 +12,15 @@ namespace NasaImagesDemo.Repository
 
         public IRepository<Tbl_EntityType> GetRepositoryInstance<Tbl_EntityType>() where Tbl_EntityType : class
         {
-            return new GenericRepository<Tbl_EntityType>(DbEntity);
+            return new GenericUnitOfWork<Tbl_EntityType>(DbEntity);
         }
-        
-        private bool Disposed;       
+        public void SaveChanges()
+        {
+            DbEntity.SaveChanges();
+        }
+
+        private bool Disposed;
+      
 
         public void Dispose()
         {
