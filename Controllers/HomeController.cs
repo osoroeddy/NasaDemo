@@ -45,6 +45,7 @@ namespace NasaImagesDemo.Controllers
             {
                 var result = formatDate(item);
 
+                //To do item - check to avoid duplicate download when accessing the page
                 //if (!isExist(result))
                 //{
                 //    continue;
@@ -52,27 +53,31 @@ namespace NasaImagesDemo.Controllers
 
                 if (!IsValidDate(result))
                 {
-                    ViewBag.ErrorMessage = $"The date {result} that was supplied in not a valid date, Please make necessary changes to view the image";
-
-                    continue;
+                    ViewBag.ErrorMessage = $"The date {result} that was supplied in not a valid date, Please make necessary changes to view the image";                   
                 }
                 else
                 {                 
                         using (var webClient = new WebClient())
                         {
                             string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
-
-                            //var imagecollections = JsonConvert.DeserializeObject<ApodImage>(url);
+                          
                             var imagecollection = JsonConvert.DeserializeObject<ApodImage>(url);
                             var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
 
-
-
                             var imageUrl = imagecollections.hdurl;
-
+                        try
+                        {
                             string path = @"C:\Users\User\source\repos\NasaImagesDemo\Images";
 
-                            webClient.DownloadFile(new Uri(imageUrl), path);                            
+                           webClient.DownloadFile(new Uri(imageUrl), path);
+
+                             webClient.UploadFile(imageUrl, path);
+                        }
+
+                        catch(UnauthorizedAccessException e)
+                        {
+                            _logger.LogError(e.Message);
+                        }
 
                             string uniqueImageFileName = null;
 
@@ -120,8 +125,8 @@ namespace NasaImagesDemo.Controllers
                 _logger.LogError(e.Message);
 
                 ViewBag.ErrorTitle = $"The date { date} is not a valid";
-                ViewBag.ErrorMesage = $"The date { date} supplied is either not a valid day of the month or is not properly formatted. The image for this date {date} will not be displayed";
-                
+                ViewBag.ErrorMesage = $"The date { date} supplied is either not a valid day of the month or is not properly formatted. " +
+                    $"The image for this date {date} will not be displayed";               
             }
 
             return false;
