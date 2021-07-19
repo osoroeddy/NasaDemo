@@ -1,22 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace NasaImagesDemo.Repository
 {
-    public class GenericRepository<Tbl_Entity> : IRepository<Tbl_Entity> where Tbl_Entity : class
+    public class GenericUnitOfWork<Tbl_Entity> : IRepository<Tbl_Entity> where Tbl_Entity : class
     {
 
         private DbSet<Tbl_Entity> _dbSet;
 
         private NasaImagesDBContext _DbEntity;
 
+        private IRepository<ApodImage> _nasaImagesrepo { get; set; }
 
-        public GenericRepository(NasaImagesDBContext DBEntity)
+        public GenericUnitOfWork(IRepository<ApodImage> nasaImageRepo)
+        {
+            _nasaImagesrepo = nasaImageRepo;
+
+        }
+
+        public GenericUnitOfWork(NasaImagesDBContext DBEntity)
         {
             _DbEntity = DBEntity;
+            
             _dbSet = _DbEntity.Set<Tbl_Entity>();
         }
         
