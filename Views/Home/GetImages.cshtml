@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ApodImage>
+﻿@model NasaImagesDemo.ApodImage
 @{
     Layout = "~Views/Shared/_Layout.schtml";
     ViewBag.Title = "Get Nasa Images";
@@ -23,17 +23,32 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var image in Model)
+            @*@foreach (var image in ApodImageCollectionObject)
             { 
             <tr>
                 <td>@image.date</td>
                 <td>@image.title </td>
                 <td>@image.explanation  </td>
                 <td>@image.url </td>
-            </tr>
+            </tr>*@
             }
         </tbody>
     </table>
+    <div class="row justify-content-around m-3">
+        <div class="col-sm-8">
+            <div class="card-header">
+                @*<h1>@model.</h1>*@
+            </div>
+            <div class="card-body text-center">
+                @*<img class="card-img-top" src "awttwuetrgtewfdshhggfdsfsfdg" />*@
+                <h4>                </h4>
+                <h4>                </h4>
+                <h4>                </h4>
+            </div>
+            <div class="card-footer text-center">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 

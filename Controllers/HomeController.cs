@@ -24,105 +24,109 @@ namespace NasaImagesDemo.Controllers
 
         private readonly IFormFile _formfile;
 
+        private IRepository<ApodImage> _service;
+
         public GenericUnitOfWork _unitOfWork = new GenericUnitOfWork();
 
         [Obsolete]
         private IHostingEnvironment _environment;
 
+        public IRepository<ApodImage> Service { get; }
+
         [Obsolete]
-        public HomeController(ILogger<HomeController> logger, IHostingEnvironment Environment)
+        public HomeController(ILogger<HomeController> logger, IHostingEnvironment Environment, IRepository<ApodImage> service)
         {
             _logger = logger;
             _environment = Environment;
-         
+            _service = service;
         }
+
+        public HomeController(IRepository<ApodImage> service)
+        {
+            Service = service;
+        }
+                
         public IActionResult Index(ApodImageCreateViewModel file)
         {
-                        
+
             var dateList = loadDatesfromFile();
 
             foreach (var item in dateList)
             {
-                var result = formatDate(item);
-
-                //To do item - check to avoid duplicate download when accessing the page
-                //if (!isExist(result))
-                //{
-                //    continue;
-                //}
+                var result = formatDate(item);              
 
                 if (!IsValidDate(result))
                 {
-                    ViewBag.ErrorMessage = $"The date {result} that was supplied in not a valid date, Please make necessary changes to view the image";                   
+                    ViewBag.ErrorMessage = $"The date {result} that was supplied in not a valid date, Please make necessary changes to view the image";
                 }
                 else
-                {                 
-                        using (var webClient = new WebClient())
-                        {
-                            string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
-                          
-                            var imagecollection = JsonConvert.DeserializeObject<ApodImage>(url);
-                            var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
+                {
+                    using (var webClient = new WebClient())
+                    {
+                        string url = webClient.DownloadString("https://api.nasa.gov/planetary/apod?api_key=PtXKNt00DLKSZ8XRjn9RkLt3QyYKknYtNFnlKvl4" + "&date=" + result);
 
-                            var imageUrl = imagecollections.hdurl;
+                        var imagecollection = JsonConvert.DeserializeObject<ApodImage>(url);
+                        var imagecollections = JsonConvert.DeserializeObject<ApodImageCreateViewModel>(url);
+
+                        var imageUrl = imagecollections.hdurl;
                         try
                         {
                             string path = @"C:\Users\User\source\repos\NasaImagesDemo\Images";
 
-                           webClient.DownloadFile(new Uri(imageUrl), path);
+                            webClient.DownloadFile(new Uri(imageUrl), path);
 
-                             webClient.UploadFile(imageUrl, path);
+                            webClient.UploadFile(imageUrl, path);
                         }
 
-                        catch(UnauthorizedAccessException e)
+                        catch (UnauthorizedAccessException e)
                         {
                             _logger.LogError(e.Message);
                         }
 
-                            string uniqueImageFileName = null;
+                        string uniqueImageFileName = null;
 
-                            if (file.Imageurl != null)
+                        if (file.Imageurl != null)
 
-                            {
-                                string uploadFolder = Path.Combine(_environment.WebRootPath, "~Images");
-                                uniqueImageFileName = Guid.NewGuid().ToString() + "_" + file.Imageurl.FileName;
-                                file.PhotoUrl = uniqueImageFileName;
-                                string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
-                                file.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
-                            }
-                            ApodImage newImage = new ApodImage
-                            {
-                                copyright = imagecollections.copyright,
-                                date = imagecollections.date,
-                                explanation = imagecollections.explanation,
-                                hdurl = imagecollections.hdurl,
-                                media_type = imagecollections.media_type,
-                                service_version = imagecollections.service_version,
-                                title = imagecollections.title,
-                                url = uniqueImageFileName
+                        {
+                            string uploadFolder = Path.Combine(_environment.WebRootPath, "~Images");
+                            uniqueImageFileName = Guid.NewGuid().ToString() + "_" + file.Imageurl.FileName;
+                            file.PhotoUrl = uniqueImageFileName;
+                            string filepath = Path.Combine(uploadFolder, uniqueImageFileName);
+                            file.Imageurl.CopyTo(new FileStream(filepath, FileMode.Create));
+                        }
+                        ApodImage newImage = new ApodImage
+                        {
+                            copyright = imagecollections.copyright,
+                            date = imagecollections.date,
+                            explanation = imagecollections.explanation,
+                            hdurl = imagecollections.hdurl,
+                            media_type = imagecollections.media_type,
+                            service_version = imagecollections.service_version,
+                            title = imagecollections.title,
+                            url = uniqueImageFileName
 
-                            };
+                        };
 
                         _unitOfWork.GetRepositoryInstance<ApodImage>().AddImages(newImage);
 
                     };
-                }
-            }
-         
-            return View();
-        }    
 
-        protected bool IsValidDate(String date)
+                } 
+            }
+                return View();
+            }
+        
+        public bool IsValidDate(String date)
         {
             try
             {
                 DateTime dt = DateTime.Parse(date);
 
-                return true;
+                return true; 
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e.Message, null);
 
                 ViewBag.ErrorTitle = $"The date { date} is not a valid";
                 ViewBag.ErrorMesage = $"The date { date} supplied is either not a valid day of the month or is not properly formatted. " +
@@ -163,22 +167,7 @@ namespace NasaImagesDemo.Controllers
             ViewBag.Title = "Nasa Images";
 
             return View(listOfImages);
-        }
-
-        private bool isExist(string inputDate)
-        {
-
-            var listOfImages = _unitOfWork.GetRepositoryInstance<ApodImage>().GetAllImages().ToList();
-
-            var list = listOfImages.Where(p => p.date == inputDate);
-
-            if (list != null)
-            {
-                return true;
-
-            }
-            return false;
-        }
+        }       
 
     }
 }
